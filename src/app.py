@@ -29,17 +29,17 @@ dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.da
 dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
 
 #Bringing in stat splits for pitcher
-dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Season Aggregated Pitcher Statistics.xlsx")
+dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
 #dfS = dfS.reindex(["TBF", "Weighted AVG", "Weighted wOBA"])
 
 dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team", "Name", "Rotowire Name", "Split", "Baseball Savant Name"], var_name="Statistic", value_name="Value")
 
-dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher Headshots.xlsx")
+dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Headshots.xlsx")
 
-dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher Percentile Rankings.csv")
+dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Percentile_Rankings.csv")
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
-dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Combined Daily Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
+dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
                                    "Weighted ISO", "Weighted K% Hitter", "Weighted BB% Hitter", 
                                    "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
                                    "Weighted AVG Pitcher", "Weighted K% Pitcher"])
