@@ -36,7 +36,7 @@ dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team
 
 dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher Headshots.xlsx")
 
-dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher Percentile Rankings.csv')
+dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher Percentile Rankings.csv")
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Combined Daily Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
