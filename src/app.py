@@ -18,7 +18,7 @@ df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
 
-dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
+dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
 dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.date
 
 #dfGameLogs['Date'] = "2024 " + dfGameLogs["Date"]
