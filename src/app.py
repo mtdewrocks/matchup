@@ -13,13 +13,12 @@ df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8
 #df = df[["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"]]
 #df = pd.read_excel("https://github.com/mtdewrocks/matchup/tree/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
 #df = pd.read_excel("https://github.com/mtdewrocks/matchup/tree/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"], engine="python")
-dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/tree/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"], engine="openpyxl")
-df2 = pd.read_excel("assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
+
 df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
-print(df.head())
-dfGameLogs = pd.read_excel(r"./assets/2024 Pitching Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
+
+dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
 dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.date
 
 #dfGameLogs['Date'] = "2024 " + dfGameLogs["Date"]
@@ -30,17 +29,17 @@ dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.da
 dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
 
 #Bringing in stat splits for pitcher
-dfS = pd.read_excel(r"C:\Users\shawn\Python\dash\dashenv\my-first-app\assets\Season Aggregated Pitcher Statistics.xlsx")
+dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Season Aggregated Pitcher Statistics.xlsx")
 #dfS = dfS.reindex(["TBF", "Weighted AVG", "Weighted wOBA"])
 
 dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team", "Name", "Rotowire Name", "Split", "Baseball Savant Name"], var_name="Statistic", value_name="Value")
 
-dfPitchers = pd.read_excel(r"C:\Users\shawn\Python\dash\dashenv\my-first-app\assets\Pitcher Headshots.xlsx")
+dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher Headshots.xlsx")
 
-dfpct = pd.read_csv(r'C:\Users\shawn\Python\dash\dashenv\my-first-app\assets\Pitcher Percentile Rankings.csv')
+dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher Percentile Rankings.csv')
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
-dfHitters = pd.read_excel(r"C:\Users\shawn\Python\dash\dashenv\my-first-app\assets\Combined Daily Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
+dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Combined Daily Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
                                    "Weighted ISO", "Weighted K% Hitter", "Weighted BB% Hitter", 
                                    "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
                                    "Weighted AVG Pitcher", "Weighted K% Pitcher"])
