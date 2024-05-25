@@ -9,14 +9,14 @@ from io import BytesIO
 
 # Preparing your data for usage *******************************************
 print(os.getcwd())
-df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
+df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
 
 df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
 
 #Used for filling the dropdown menu
-dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Headshots.xlsx")
+dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Headshots.xlsx")
 
 df = df.merge(dfPitchers, on="Name", how="left")
 
@@ -30,7 +30,7 @@ dfGameLogs = dfGameLogs.rename(columns={"Opp":"Opponent"})
 dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
 
 #Bringing in stat splits for pitcher
-dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
+dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
 dfS['Weighted K%'] = (dfS['Weighted K%']*100).round(1)
 dfS['Weighted BB%'] = (dfS['Weighted BB%']*100).round(1)
 dfS['Weighted GB%'] = (dfS['Weighted GB%']*100).round(1)
@@ -47,16 +47,12 @@ dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team
 #Testing for now
 #dfSplits['Value'] = dfSplits['Value'].round(3)
 
-
-#Used for filling the dropdown menu
-dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Headshots.xlsx")
-
-#Used for showing the percetile graph
-dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Percentile_Rankings.csv")
+#Used for showing the percentile graph
+dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Percentile_Rankings.csv")
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Used for the hitter table
-dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
+dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
                                    "Weighted ISO", "Weighted K% Hitter", "Weighted BB% Hitter", 
                                    "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
                                    "Weighted AVG Pitcher", "Weighted K% Pitcher"])
