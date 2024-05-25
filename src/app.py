@@ -23,7 +23,7 @@ df = df.merge(dfPitchers, on="Name", how="left")
 df = df[["Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"]]
 
 #Used for getting the game by game logs - maybe limit to last five starts?
-dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
+dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/blob/422110eedf3c1790a0965b883d3991e9446e99f5/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
 dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.date
 dfGameLogs = dfGameLogs.rename(columns={"Opp":"Opponent"})
 
