@@ -10,35 +10,52 @@ from io import BytesIO
 # Preparing your data for usage *******************************************
 print(os.getcwd())
 df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
-#df = df[["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"]]
-#df = pd.read_excel("https://github.com/mtdewrocks/matchup/tree/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
-#df = pd.read_excel("https://github.com/mtdewrocks/matchup/tree/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"], engine="python")
 
 df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
 
+#Used for filling the dropdown menu
+dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Headshots.xlsx")
+
+df = df.merge(dfPitchers, on="Name", how="left")
+
+df = df[["Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"]]
+
+#Used for getting the game by game logs - maybe limit to last five starts?
 dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
 dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.date
-
-#dfGameLogs['Date'] = "2024 " + dfGameLogs["Date"]
-#dfGameLogs["Date"] = pd.to_datetime(dfGameLogs['Date'], format="%Y %B %d")
-#dfGameLogs['Date'] = dfGameLogs['Date'].dt.date
-#dfGameLogs["Date"] = pd.DatetimeIndex(dfGameLogs["Date"]).strftime("%Y-%m-%d")
+dfGameLogs = dfGameLogs.rename(columns={"Opp":"Opponent"})
 
 dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
 
 #Bringing in stat splits for pitcher
 dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
+dfS['Weighted K%'] = (dfS['Weighted K%']*100).round(1)
+dfS['Weighted BB%'] = (dfS['Weighted BB%']*100).round(1)
+dfS['Weighted GB%'] = (dfS['Weighted GB%']*100).round(1)
+dfS['Weighted LD%'] = (dfS['Weighted LD%']*100).round(1)
+dfS['Weighted FB%'] = (dfS['Weighted FB%']*100).round(1)
+dfS['Weighted Soft%'] = (dfS['Weighted Soft%']*100).round(1)
+dfS['Weighted Med%'] = (dfS['Weighted Med%']*100).round(1)
+dfS['Weighted Hard%'] = (dfS['Weighted Hard%']*100).round(1)
 #dfS = dfS.reindex(["TBF", "Weighted AVG", "Weighted wOBA"])
+
 
 dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team", "Name", "Rotowire Name", "Split", "Baseball Savant Name"], var_name="Statistic", value_name="Value")
 
+#Testing for now
+#dfSplits['Value'] = dfSplits['Value'].round(3)
+
+
+#Used for filling the dropdown menu
 dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Headshots.xlsx")
 
+#Used for showing the percetile graph
 dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Pitcher_Percentile_Rankings.csv")
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
+#Used for the hitter table
 dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
                                    "Weighted ISO", "Weighted K% Hitter", "Weighted BB% Hitter", 
                                    "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
@@ -50,7 +67,7 @@ dfHitters = dfHitters.rename(columns={"Weighted AVG Hitter":"Average", "Weighted
 
 dfHitters['Average'] = dfHitters["Average"].round(3)
 dfHitters['wOBA'] = dfHitters["wOBA"].round(3)
-dfHitters['ISO'] = dfHitters["Average"].round(3)
+dfHitters['ISO'] = dfHitters["ISO"].round(3)
 dfHitters['K%'] = dfHitters["K%"].round(1)
 dfHitters['BB%'] = dfHitters["BB%"].round(1)
 dfHitters['GB%'] = dfHitters["GB%"].round(1)
@@ -62,8 +79,11 @@ dfHitters['Pitcher K%'] = dfHitters["Pitcher K%"].round(1)
                
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
 hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'}, 'backgroundColor':'lightcoral'}, {'if':{'filter_query': '{Average} < 0.200', 'column_id':'Average'}, 'backgroundColor':'darkred'},\
-                {'if':{'filter_query': '{Average} > 0.250', 'column_id':'Average'}, 'backgroundColor':'deepskyblue'}, {'if':{'filter_query': '{Average} > 0.275', 'column_id':'Average'}, 'backgroundColor':'lawngreen'},
-                {'if':{'filter_query': '{Average} > 0.300', 'column_id':'Average'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'Average'},'color': 'white'}]    
+                {'if':{'filter_query': '{Average} >= 0.250', 'column_id':'Average'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{Average} >= 0.275', 'column_id':'Average'}, 'backgroundColor':'blue'},
+                {'if':{'filter_query': '{Average} > 0.300', 'column_id':'Average'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'Average'},'color': 'white'},\
+                {'if':{'filter_query': '{wOBA} < .325', 'column_id':'wOBA'}, 'backgroundColor':'lightcoral'},{'if':{'filter_query': '{wOBA} <= 0.275', 'column_id':'wOBA'}, 'backgroundColor':'darkred'},\
+                {'if':{'filter_query': '{wOBA} >= 0.325', 'column_id':'wOBA'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{wOBA} >= 0.360', 'column_id':'wOBA'}, 'backgroundColor':'blue'},
+                {'if':{'filter_query': '{wOBA} > 0.400', 'column_id':'wOBA'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'wOBA'},'color': 'white'}]    
 
 stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = Dash(__name__, external_stylesheets=stylesheets)
@@ -86,7 +106,7 @@ app.layout = html.Div(
             id="data-table", data=df.to_dict("records"), style_cell={"textAlign":"center"}),
         className="six columns"),
     ], className="row"),
-    html.Div(dash_table.DataTable(id="game-log-table", data=dfGameLogs.to_dict("records"), style_cell={"textAlign":"center"}),
+    html.Div(dash_table.DataTable(id="game-log-table", data=dfGameLogs.to_dict("records"), style_cell={"textAlign":"center", "fontWeight":"bold", "fontSize":"30px"}),
              style={"padding-top":"25px"},
              className="row"),
      html.Div([html.Div(dash_table.DataTable(id="splits-table", data=dfSplits.to_dict("records"), style_cell={"textAlign":"center"}),style={"padding-top":"25px"}, className="six columns"),
@@ -96,7 +116,7 @@ app.layout = html.Div(
 
 @app.callback(
     [Output(component_id="pitcher-picture", component_property="style"), Output(component_id="pcts-graph", component_property="style")],
-    [Input(component_id="pitcher-dropdown", component_property="value")])
+    [Input(component_id="pitcher-dropdown", component_property="value")], prevent_initial_call=True)
 
 def show_visibility(chosen_value):
     try:
@@ -109,12 +129,15 @@ def show_visibility(chosen_value):
 
 @app.callback(
     Output(component_id="pitcher-picture", component_property="src"),
-    [Input(component_id="pitcher-dropdown", component_property="value")])
+    [Input(component_id="pitcher-dropdown", component_property="value")], prevent_initial_call=True)
 
 def update_picture(chosen_value):
     print(f"Values chosen by user: {chosen_value}")
-    path = "\\assets\\"
-    image = path + str(chosen_value) + ".jpg"
+    beginning_path = "https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/"
+    adjusted_name = chosen_value.split()
+    adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
+    image = beginning_path + adjusted_chosen_value
+    print(image)
     if chosen_value!=None:
         return image
 
@@ -157,8 +180,8 @@ def show_pitcher_splits(chosen_value):
         cols = ["vs L", "Statistic", "vs R"]
         dfFinal = dfPivot[cols]
         dfFinal = dfFinal.reset_index()
-    #dfFinal = dfFinal.reindex([3,0,2])
-    #dfFinal = dfFinal.drop('index',axis=1)
+        dfFinal = dfFinal.reindex([3,4,5,17,15,1,0,2,12,6,9,13,7,10,16,14,11,8,18])
+        dfFinal = dfFinal.drop('index',axis=1)
         return dfFinal.to_dict('records')
     except:
         return dffSplits.to_dict('records')
