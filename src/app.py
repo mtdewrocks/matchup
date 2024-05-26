@@ -9,14 +9,14 @@ from io import BytesIO
 path = "51cbb031f232e0b399525c455e574e7fe2df20c1"
 # Preparing your data for usage *******************************************
 print(os.getcwd())
-df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/+path+/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
+df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/" + path + "/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
 
 df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
 
 #Used for filling the dropdown menu
-dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Headshots.xlsx")
+dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/" + path + "/assets/Pitcher_Headshots.xlsx")
 
 df = df.merge(dfPitchers, on="Name", how="left")
 
@@ -30,7 +30,7 @@ dfGameLogs = dfGameLogs.rename(columns={"Opp":"Opponent"})
 dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
 
 #Bringing in stat splits for pitcher
-dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
+dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/" + path + "/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
 dfS['Weighted K%'] = (dfS['Weighted K%']*100).round(1)
 dfS['Weighted BB%'] = (dfS['Weighted BB%']*100).round(1)
 dfS['Weighted GB%'] = (dfS['Weighted GB%']*100).round(1)
@@ -48,7 +48,7 @@ dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team
 #dfSplits['Value'] = dfSplits['Value'].round(3)
 
 #Used for showing the percentile graph
-dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Percentile_Rankings.csv")
+dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/" + path + "/assets/Pitcher_Percentile_Rankings.csv")
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Used for the hitter table
