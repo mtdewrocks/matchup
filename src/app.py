@@ -6,10 +6,10 @@ from dash import Dash, dcc, html, Input, Output, dash_table
 import openpyxl
 import requests
 from io import BytesIO
-
+path = "51cbb031f232e0b399525c455e574e7fe2df20c1"
 # Preparing your data for usage *******************************************
 print(os.getcwd())
-df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
+df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/+path+/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
 
 df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
@@ -52,7 +52,7 @@ dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a692
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Used for the hitter table
-dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
+dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/51cbb031f232e0b399525c455e574e7fe2df20c1/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
                                    "Weighted ISO", "Weighted K% Hitter", "Weighted BB% Hitter", 
                                    "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
                                    "Weighted AVG Pitcher", "Weighted K% Pitcher"])
