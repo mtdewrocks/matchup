@@ -129,7 +129,7 @@ def show_visibility(chosen_value):
 
 def update_picture(chosen_value):
     print(f"Values chosen by user: {chosen_value}")
-    beginning_path = "https://github.com/mtdewrocks/matchup/raw/main/assets"
+    beginning_path = "https://github.com/mtdewrocks/matchup/raw/main/assets/"
     adjusted_name = chosen_value.split()
     adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
     image = beginning_path + adjusted_chosen_value
