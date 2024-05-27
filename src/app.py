@@ -6,31 +6,31 @@ from dash import Dash, dcc, html, Input, Output, dash_table
 import openpyxl
 import requests
 from io import BytesIO
-
+path = "51cbb031f232e0b399525c455e574e7fe2df20c1"
 # Preparing your data for usage *******************************************
 print(os.getcwd())
-df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
+df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
 
 df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
 
 #Used for filling the dropdown menu
-dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Headshots.xlsx")
+dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Headshots.xlsx")
 
 df = df.merge(dfPitchers, on="Name", how="left")
 
 df = df[["Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"]]
 
 #Used for getting the game by game logs - maybe limit to last five starts?
-dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/422110eedf3c1790a0965b883d3991e9446e99f5/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
+dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
 dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.date
 dfGameLogs = dfGameLogs.rename(columns={"Opp":"Opponent"})
 
 dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
 
 #Bringing in stat splits for pitcher
-dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
+dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
 dfS['Weighted K%'] = (dfS['Weighted K%']*100).round(1)
 dfS['Weighted BB%'] = (dfS['Weighted BB%']*100).round(1)
 dfS['Weighted GB%'] = (dfS['Weighted GB%']*100).round(1)
@@ -48,11 +48,11 @@ dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team
 #dfSplits['Value'] = dfSplits['Value'].round(3)
 
 #Used for showing the percentile graph
-dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Pitcher_Percentile_Rankings.csv")
+dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Percentile_Rankings.csv")
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Used for the hitter table
-dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/92bd70c714ca9a6926c59c7cd41355468c9cfbe9/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
+dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
                                    "Weighted ISO", "Weighted K% Hitter", "Weighted BB% Hitter", 
                                    "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
                                    "Weighted AVG Pitcher", "Weighted K% Pitcher"])
@@ -129,7 +129,7 @@ def show_visibility(chosen_value):
 
 def update_picture(chosen_value):
     print(f"Values chosen by user: {chosen_value}")
-    beginning_path = "https://github.com/mtdewrocks/matchup/raw/072ac999722ded50e8b2eeb649c75f091a8ecbcb/assets/"
+    beginning_path = "https://github.com/mtdewrocks/matchup/raw/main/assets/"
     adjusted_name = chosen_value.split()
     adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
     image = beginning_path + adjusted_chosen_value
