@@ -55,10 +55,9 @@ dfpct = dfpct.rename(columns={"fb_velocity":"Fastball Velo", "exit_velocity":"Av
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Used for the hitter table
-dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Weighted AVG Hitter", "Weighted wOBA Hitter",
-                                   "Weighted ISO", "Weighted K% Hitter", "Weighted BB% Hitter", 
-                                   "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
-                                   "Weighted AVG Pitcher", "Weighted K% Pitcher"])
+dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Average", "wOBA",
+                                   "ISO", "K%", "BB%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher", 
+                                   "Pitcher Average", "Pitcher K%"])
 
 
                
