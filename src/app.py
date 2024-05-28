@@ -6,9 +6,10 @@ from dash import Dash, dcc, html, Input, Output, dash_table
 import openpyxl
 import requests
 from io import BytesIO
-path = "51cbb031f232e0b399525c455e574e7fe2df20c1"
+
+
 # Preparing your data for usage *******************************************
-print(os.getcwd())
+
 df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Season_Stats.xlsx", usecols=["Name", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"])
 
 df['K/IP'] = df["SO"]/df["IP"]
@@ -20,7 +21,7 @@ dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/asset
 
 df = df.merge(dfPitchers, on="Name", how="left")
 
-df = df[["Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "WHIP", "GS"]]
+df = df[["Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "K/IP", "WHIP"]]
 
 #Used for getting the game by game logs - maybe limit to last five starts?
 dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
@@ -49,6 +50,8 @@ dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team
 
 #Used for showing the percentile graph
 dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Percentile_Rankings.csv")
+dfpct = dfpct.rename(columns={"fb_velocity":"Fastball Velo", "exit_velocity":"Avg Exit Velocity", "k_percent":"K %", "chase_percent":"Chase %",
+                              "whiff_percent":"Whiff %", "brl_percent":"Barrel %", "hard_hit_percent":"Hard-Hit %", "bb_percent":"BB %"})
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Used for the hitter table
@@ -189,7 +192,7 @@ def show_pitcher_splits(chosen_value):
 def show_percentiles(chosen_value):
     dfpcts = dfpct.copy()
     dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
-    fig = px.bar(dfpcts, x="Percentile", y="Statistic", category_orders={"Statistic": ['brl', 'k_percent', 'chase_percent', 'whiff_percent']}, color="Percentile", orientation="h",
+    fig = px.bar(dfpcts, x="Percentile", y="Statistic", category_orders={"Statistic": ['xera', 'xba', 'Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
     fig.update_xaxes(range=[0, 100])
