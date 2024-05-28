@@ -60,21 +60,7 @@ dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets
                                    "Weighted GB% Hitter", "Weighted FB% Hitter", "Weighted Hard% Hitter", "Pitcher", 
                                    "Weighted AVG Pitcher", "Weighted K% Pitcher"])
 
-dfHitters = dfHitters.rename(columns={"Weighted AVG Hitter":"Average", "Weighted wOBA Hitter":"wOBA", "Weighted ISO":"ISO", "Weighted K% Hitter":"K%", "Weighted BB% Hitter":"BB%",
-                                      "Weighted GB% Hitter":"GB%", "Weighted FB% Hitter":"Fly Ball %", "Weighted Hard% Hitter": "Hard Contact %", "Weighted AVG Pitcher": "Pitcher Average",
-                                      "Weighted K% Pitcher":"Pitcher K%"})
 
-dfHitters['Average'] = dfHitters["Average"].round(3)
-dfHitters['wOBA'] = dfHitters["wOBA"].round(3)
-dfHitters['ISO'] = dfHitters["ISO"].round(3)
-dfHitters['K%'] = dfHitters["K%"].round(1)
-dfHitters['BB%'] = dfHitters["BB%"].round(1)
-dfHitters['GB%'] = dfHitters["GB%"].round(1)
-dfHitters['Fly Ball %'] = dfHitters["Fly Ball %"].round(1)
-dfHitters['Hard Contact %'] = dfHitters["Hard Contact %"].round(1)
-dfHitters['Pitcher Average'] = dfHitters["Pitcher Average"].round(3)
-dfHitters['Pitcher K%'] = dfHitters["Pitcher K%"]*100
-dfHitters['Pitcher K%'] = dfHitters["Pitcher K%"].round(1)
                
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
 hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'}, 'backgroundColor':'lightcoral'}, {'if':{'filter_query': '{Average} < 0.200', 'column_id':'Average'}, 'backgroundColor':'darkred'},\
