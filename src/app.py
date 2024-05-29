@@ -127,8 +127,12 @@ def update_picture(chosen_value):
     print(f"Values chosen by user: {chosen_value}")
     beginning_path = "https://github.com/mtdewrocks/matchup/raw/main/assets/"
     adjusted_name = chosen_value.split()
-    adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
-    image = beginning_path + adjusted_chosen_value
+    if len(adjusted_name)==2:
+        adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
+        image = beginning_path + adjusted_chosen_value
+    elif len(adjusted_name)==3:
+        adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + "%20" + adjusted_name[2] + ".jpg"
+        image = beginning_path + adjusted_chosen_value
     print(image)
     if chosen_value!=None:
         return image
