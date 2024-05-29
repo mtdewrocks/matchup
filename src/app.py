@@ -40,6 +40,8 @@ dfS['Weighted FB%'] = (dfS['Weighted FB%']*100).round(1)
 dfS['Weighted Soft%'] = (dfS['Weighted Soft%']*100).round(1)
 dfS['Weighted Med%'] = (dfS['Weighted Med%']*100).round(1)
 dfS['Weighted Hard%'] = (dfS['Weighted Hard%']*100).round(1)
+dfS["Pitcher HR Rate"] = round(dfS["Pitcher HR Rate"]*100,1)
+dfS["Weighted HR/FB"] = round(dfS["Weighted HR/FB"]*100,1)
 #dfS = dfS.reindex(["TBF", "Weighted AVG", "Weighted wOBA"])
 
 
@@ -67,7 +69,13 @@ hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'
                 {'if':{'filter_query': '{Average} > 0.300', 'column_id':'Average'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'Average'},'color': 'white'},\
                 {'if':{'filter_query': '{wOBA} < .325', 'column_id':'wOBA'}, 'backgroundColor':'lightcoral'},{'if':{'filter_query': '{wOBA} <= 0.275', 'column_id':'wOBA'}, 'backgroundColor':'darkred'},\
                 {'if':{'filter_query': '{wOBA} >= 0.325', 'column_id':'wOBA'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{wOBA} >= 0.360', 'column_id':'wOBA'}, 'backgroundColor':'blue'},
-                {'if':{'filter_query': '{wOBA} > 0.400', 'column_id':'wOBA'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'wOBA'},'color': 'white'}]    
+                {'if':{'filter_query': '{wOBA} > 0.400', 'column_id':'wOBA'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'wOBA'},'color': 'white'},
+                {'if':{'filter_query': '{ISO} < .175', 'column_id':'ISO'}, 'backgroundColor':'lightcoral'},{'if':{'filter_query': '{ISO} <= 0.125', 'column_id':'ISO'}, 'backgroundColor':'darkred'},\
+                {'if':{'filter_query': '{ISO} >= 0.175', 'column_id':'ISO'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{ISO} >= 0.225', 'column_id':'ISO'}, 'backgroundColor':'blue'},
+                {'if':{'filter_query': '{ISO} > 0.275', 'column_id':'ISO'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'ISO'},'color': 'white'},
+                {'if':{'filter_query': '{K%} < 25', 'column_id':'K%'}, 'backgroundColor':'lightcoral'},{'if':{'filter_query': '{K%} >= 25', 'column_id':'K%'}, 'backgroundColor':'darkred'},\
+                {'if':{'filter_query': '{K%} < 20', 'column_id':'K%'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{K%} < 15', 'column_id':'K%'}, 'backgroundColor':'blue'},
+                {'if':{'filter_query': '{K%} < 10', 'column_id':'K%'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'K%'},'color': 'white'}]    
 
 stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = Dash(__name__, external_stylesheets=stylesheets)
