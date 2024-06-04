@@ -184,7 +184,6 @@ def show_percentiles(chosen_value):
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
     fig.update_xaxes(range=[0, 100])
-    fig.update_layout(title={"x":0.5})
     fig.update(layout_coloraxis_showscale=False)
     return fig
 
