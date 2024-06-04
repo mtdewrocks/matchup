@@ -32,16 +32,7 @@ dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
 
 #Bringing in stat splits for pitcher
 dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
-dfS['Weighted K%'] = (dfS['Weighted K%']*100).round(1)
-dfS['Weighted BB%'] = (dfS['Weighted BB%']*100).round(1)
-dfS['Weighted GB%'] = (dfS['Weighted GB%']*100).round(1)
-dfS['Weighted LD%'] = (dfS['Weighted LD%']*100).round(1)
-dfS['Weighted FB%'] = (dfS['Weighted FB%']*100).round(1)
-dfS['Weighted Soft%'] = (dfS['Weighted Soft%']*100).round(1)
-dfS['Weighted Med%'] = (dfS['Weighted Med%']*100).round(1)
-dfS['Weighted Hard%'] = (dfS['Weighted Hard%']*100).round(1)
-dfS["Pitcher HR Rate"] = round(dfS["Pitcher HR Rate"]*100,1)
-dfS["Weighted HR/FB"] = round(dfS["Weighted HR/FB"]*100,1)
+
 #dfS = dfS.reindex(["TBF", "Weighted AVG", "Weighted wOBA"])
 
 
@@ -189,7 +180,7 @@ def show_pitcher_splits(chosen_value):
 def show_percentiles(chosen_value):
     dfpcts = dfpct.copy()
     dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
-    fig = px.bar(dfpcts, x="Percentile", y="Statistic", category_orders={"Statistic": ['xera', 'xba', 'Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
+    fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['xera', 'xba', 'Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
     fig.update_xaxes(range=[0, 100])
