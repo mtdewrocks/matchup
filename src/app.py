@@ -127,7 +127,7 @@ def update_picture(chosen_value):
     elif len(adjusted_name)==3:
         adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + "%20" + adjusted_name[2] + ".jpg"
         image = beginning_path + adjusted_chosen_value
-    print(image)
+    
     if chosen_value!=None:
         return image
 
