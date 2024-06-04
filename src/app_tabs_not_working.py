@@ -6,7 +6,7 @@ from dash import Dash, dcc, html, Input, Output, dash_table
 import openpyxl
 import requests
 from io import BytesIO
-
+import dash_bootstrap_components as dbc
 
 # Preparing your data for usage *******************************************
 
@@ -76,7 +76,7 @@ server = app.server
 
 image = ""
 
-app.layout = html.Div(
+home_tab = html.Div(
     [html.Div(html.H1("MLB Matchup Analysis", id="title", style={"textAlign":"center"}), className="row"),
     html.Div([html.Div(dcc.Dropdown(
             id="pitcher-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(dfPitchers["Name"])]
@@ -99,6 +99,14 @@ app.layout = html.Div(
      html.Div(html.P(children="Splits data are the weighted average of 2023 and 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
      html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHitters.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
 
+
+hot_hitters = html.Div(html.P("Placeholder tab for hot hitters over the last week."))
+best_matchups = html.Div(html.P("Placeholder for hitters with the best matchup"))
+
+
+tabs = html.Div([dcc.Tabs([dcc.Tab(home_tab, label="Matchup"), dcc.Tab(hot_hitters, label="Hot Hitters"),
+                 dcc.Tab(best_matchups, label="Best Hitter Matchups")])])
+app.layout = dbc.Row(dbc.Col(tabs))
 
 @app.callback(
     [Output(component_id="pitcher-picture", component_property="style"), Output(component_id="pcts-graph", component_property="style"), Output(component_id="splits-note", component_property="style"),],
