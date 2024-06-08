@@ -1,4 +1,3 @@
-
 import pandas as pd
 import plotly.express as px
 import os
@@ -6,7 +5,7 @@ from dash import Dash, dcc, html, Input, Output, dash_table
 import openpyxl
 import requests
 from io import BytesIO
-
+import dash_bootstrap_components as dbc
 
 # Preparing your data for usage *******************************************
 
@@ -49,13 +48,27 @@ print(dfpct.columns.tolist())
 dfpct = dfpct[['player_name', 'player_id', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
+#Gets Hitters with Over .350 avg and 20 AB in last week
+dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx')
+
+dfHot = dfLast7.query("PA>=20 & BA>=.350")
+
+dfLastWeek = dfLast7[['Name', 'BA']]
+dfLastWeek = dfLastWeek.rename(columns={"BA":"Last Week Average"} )
+
 #Used for the hitter table
 dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Average", "wOBA",
-                                   "ISO", "K%", "BB%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher", 
-                                   "Pitcher Average", "Pitcher K%"])
+                                   "ISO", "K%", "BB%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher"])
+
+print(dfHitters.shape)
+dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="fg_name", right_on="Name", how="left")
+dfHittersFinal = dfHittersFinal.drop("Name", axis=1)
+print(dfHittersFinal.shape)
+                                                                                                                     #"Pitcher", 
+                                   #"Pitcher Average", "Pitcher K%"])
 
 
-               
+
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
 hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'}, 'backgroundColor':'lightcoral'}, {'if':{'filter_query': '{Average} < 0.200', 'column_id':'Average'}, 'backgroundColor':'darkred'},\
                 {'if':{'filter_query': '{Average} >= 0.250', 'column_id':'Average'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{Average} >= 0.275', 'column_id':'Average'}, 'backgroundColor':'blue'},
@@ -70,13 +83,13 @@ hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'
                 {'if':{'filter_query': '{K%} < 20', 'column_id':'K%'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{K%} < 15', 'column_id':'K%'}, 'backgroundColor':'blue'},
                 {'if':{'filter_query': '{K%} < 10', 'column_id':'K%'}, 'backgroundColor':'darkgreen'}, {'if':{'column_id': 'K%'},'color': 'white'}]    
 
-stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+stylesheets = [dbc.themes.BOOTSTRAP, "https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = Dash(__name__, external_stylesheets=stylesheets)
 server = app.server
 
 image = ""
 
-app.layout = html.Div(
+matchup_tab = html.Div(
     [html.Div(html.H1("MLB Matchup Analysis", id="title", style={"textAlign":"center"}), className="row"),
     html.Div([html.Div(dcc.Dropdown(
             id="pitcher-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(dfPitchers["Name"])]
@@ -97,7 +110,15 @@ app.layout = html.Div(
      html.Div([html.Div(dash_table.DataTable(id="splits-table", data=dfSplits.to_dict("records"), style_cell={"textAlign":"center"}),style={"padding-top":"25px"}, className="six columns"),
       html.Div(dcc.Graph(figure={}, id="pcts-graph", style={'display': 'none'}), className="two columns")], className="row"),
      html.Div(html.P(children="Splits data are the weighted average of 2023 and 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
-     html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHitters.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
+     html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHittersFinal.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
+
+hot_hitter_tab = dbc.Container([dbc.Row([html.Img(
+            id="fire", src=app.get_asset_url('fire.png'), alt="fire", height=25, width=25, style={'display':'block', 'padding':'0px', 'padding-left':"0px"}),
+                                         html.H1("Hot Hitters", style={'color': 'red', 'fontSize': 40, 'textAlign':'center'})]), dbc.Row(html.H6("Statistics over the last week", style={'fontSize': 20, 'textAlign':'center'})),
+                                    dbc.Row(dash_table.DataTable(id="hot-hitters", data=dfHot.to_dict("records"), style_cell={"textAlign":"center"}, sort_action="native"))])
+
+tabs = dbc.Tabs([dbc.Tab(matchup_tab, label="Matchup"), dbc.Tab(hot_hitter_tab, label="Hitter")])
+app.layout = dbc.Row(dbc.Col(tabs))
 
 
 @app.callback(
@@ -140,7 +161,7 @@ def update_stats(chosen_value):
     dff = df.copy()
     dff = dff[dff.Name==chosen_value]
 
-    dfh = dfHitters.copy()
+    dfh = dfHittersFinal.copy()
     dfh = dfh[dfh.Pitcher==chosen_value]
     print(dfh.head())
     dfh = dfh.sort_values(by="Batting Order")
@@ -187,7 +208,7 @@ def show_percentiles(chosen_value):
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
     fig.update_xaxes(range=[0, 100])
-    fig.update_layout(title_x=0.5, title_font_weight="bold")
+    #fig.update_layout(title_x=0.5, title_font_weight="bold", layout_coloraxis_showscale=False)
     fig.update(layout_coloraxis_showscale=False)
     return fig
 
