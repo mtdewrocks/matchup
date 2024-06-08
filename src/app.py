@@ -49,7 +49,7 @@ dfpct = dfpct[['player_name', 'player_id', 'year', 'Expected ERA', 'Expected Bat
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
-dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx')
+dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx")
 
 dfHot = dfLast7.query("PA>=20 & BA>=.350")
 
