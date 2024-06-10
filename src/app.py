@@ -47,6 +47,8 @@ dfpct = dfpct.rename(columns={"xera":"Expected ERA", "xba":"Expected Batting Avg
 
 dfpct = dfpct[['player_name', 'player_id', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
+dfpct = dfpct.merge(dfPitchers, left_on="player_name", right_on="Baseball_Savant_Name", how="inner")
+dfpct = dfpct.drop(['URL', 'Handedness'], axis=1)
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
 dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx")
@@ -173,7 +175,10 @@ def update_stats(chosen_value):
 
 def update_game_logs(chosen_value):
     dffgame = dfGameLogs.copy()
+    print(chosen_value)
+    print(dffgame.shape)
     dffgame = dffgame[(dffgame.Name==chosen_value) | (dffgame.Baseball_Savant_Name==chosen_value)]
+    print(dffgame.shape)
     dffgame = dffgame.drop("Name", axis=1)
     return dffgame.to_dict('records')
 
@@ -202,7 +207,8 @@ def show_pitcher_splits(chosen_value):
 
 def show_percentiles(chosen_value):
     dfpcts = dfpct.copy()
-    dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
+    print(chosen_value)
+    dfpcts = dfpcts[(dfpcts['player_name']==chosen_value) |(dfpcts['Baseball_Savant_Name']==chosen_value)]
     fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
