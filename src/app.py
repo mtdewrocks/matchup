@@ -44,7 +44,7 @@ dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team
 dfpct = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Percentile_Rankings.xlsx")
 dfpct = dfpct.rename(columns={"xera":"Expected ERA", "xba":"Expected Batting Avg", "fb_velocity":"Fastball Velo", "exit_velocity":"Avg Exit Velocity", "k_percent":"K %", "chase_percent":"Chase %",
                               "whiff_percent":"Whiff %", "brl_percent":"Barrel %", "hard_hit_percent":"Hard-Hit %", "bb_percent":"BB %"})
-print(dfpct.columns.tolist())
+
 dfpct = dfpct[['player_name', 'player_id', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
@@ -139,7 +139,6 @@ def show_visibility(chosen_value):
     [Input(component_id="pitcher-dropdown", component_property="value")], prevent_initial_call=True)
 
 def update_picture(chosen_value):
-    print(f"Values chosen by user: {chosen_value}")
     beginning_path = "https://github.com/mtdewrocks/matchup/raw/main/assets/"
     adjusted_name = chosen_value.split()
     if len(adjusted_name)==2:
@@ -174,7 +173,7 @@ def update_stats(chosen_value):
 
 def update_game_logs(chosen_value):
     dffgame = dfGameLogs.copy()
-    dffgame = dffgame[dffgame.Name==chosen_value]
+    dffgame = dffgame[(dffgame.Name==chosen_value) | (dffgame.Baseball_Savant_Name==chosen_value]
     dffgame = dffgame.drop("Name", axis=1)
     return dffgame.to_dict('records')
 
@@ -204,7 +203,7 @@ def show_pitcher_splits(chosen_value):
 def show_percentiles(chosen_value):
     dfpcts = dfpct.copy()
     dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
-    fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['xera', 'xba', 'Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
+    fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
     fig.update_xaxes(range=[0, 100])
