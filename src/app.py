@@ -173,7 +173,7 @@ def update_stats(chosen_value):
 
 def update_game_logs(chosen_value):
     dffgame = dfGameLogs.copy()
-    dffgame = dffgame[(dffgame.Name==chosen_value) | (dffgame.Baseball_Savant_Name==chosen_value]
+    dffgame = dffgame[(dffgame.Name==chosen_value) | (dffgame.Baseball_Savant_Name==chosen_value)]
     dffgame = dffgame.drop("Name", axis=1)
     return dffgame.to_dict('records')
 
