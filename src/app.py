@@ -58,7 +58,7 @@ dfLastWeek = dfLastWeek.rename(columns={"BA":"Last Week Average"} )
 
 #Used for the hitter table
 dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Average", "wOBA",
-                                   "ISO", "K%", "BB%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher"])
+                                   "ISO", "K%", "BB%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher", "Baseball Savant Name"])
 
 print(dfHitters.shape)
 dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="fg_name", right_on="Name", how="left")
@@ -162,7 +162,7 @@ def update_stats(chosen_value):
     dff = dff[dff.Name==chosen_value]
 
     dfh = dfHittersFinal.copy()
-    dfh = dfh[dfh.Pitcher==chosen_value]
+    dfh = dfh[(dfh.Pitcher==chosen_value) | (dfh["Baseball Savant Name"]==chosen_value)]
     print(dfh.head())
     dfh = dfh.sort_values(by="Batting Order")
     dfh = dfh.drop("Pitcher", axis=1)
