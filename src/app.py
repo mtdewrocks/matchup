@@ -100,7 +100,7 @@ image = ""
 matchup_tab = html.Div(
     [html.Div(html.H1("MLB Matchup Analysis", id="title", style={"textAlign":"center"}), className="row"),
     html.Div([html.Div(dcc.Dropdown(
-            id="pitcher-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(dfPitchers["Name"])]
+            id="pitcher-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(dfPitchers["Baseball_Savant_Name"])]
             ),
         className="two columns"),
     html.Div(
@@ -171,9 +171,9 @@ def update_picture(chosen_value):
 
 def update_stats(chosen_value):
     dff = df.copy()
-    dff = dff[dff.Name==chosen_value]
+    dff = dff[dff["Baseball_Savant_Name"]==chosen_value]
     dfh = dfHittersFinal.copy()
-    dfh = dfh[(dfh.Pitcher==chosen_value) | (dfh["Baseball Savant Name"]==chosen_value)]
+    dfh = dfh[dfh["Baseball Savant Name"]==chosen_value]
     dfh = dfh.sort_values(by="Batting Order")
     dfh = dfh.drop("Pitcher", axis=1)
     return dff.to_dict('records'), dfh.to_dict('records')
@@ -196,7 +196,7 @@ def update_game_logs(chosen_value):
 
 def show_pitcher_splits(chosen_value):
     dffSplits = dfSplits.copy()
-    dffSplits = dffSplits[dfSplits['Name']==chosen_value]
+    dffSplits = dffSplits[dfSplits['Baseball Savant Name']==chosen_value]
     try:
         dfPivot = dffSplits.pivot_table('Value', index='Statistic', columns='Split')
         dfPivot = dfPivot.reset_index()
