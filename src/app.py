@@ -18,16 +18,22 @@ df['WHIP'] = df['WHIP'].round(2)
 #Used for filling the dropdown menu
 dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Headshots.xlsx")
 
-df = df.merge(dfPitchers, on="Name", how="left")
+df = df.merge(dfPitchers, left_on="Name", right_on="Baseball_Savant_Name", how="left")
 
-df = df[["Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "K/IP", "WHIP"]]
+df = df.rename(columns={"Name_y":"Name"}).drop("Name_x", axis=1)
+df = df[["Name", "Baseball_Savant_Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "K/IP", "WHIP"]]
 
 #Used for getting the game by game logs - maybe limit to last five starts?
 dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
 dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.date
 dfGameLogs = dfGameLogs.rename(columns={"Opp":"Opponent"})
 
+##dfGameLogs = dfGameLogs.merge(dfPitchers, left_on="Name", right_on="Baseball_Savant_Name", how="inner")
+##dfGameLogs = dfGameLogs.drop(['URL', 'Handedness'], axis=1)
+
+
 dfGameLogs = dfGameLogs.sort_values(by="Date", ascending=False)
+##dfGameLogs = dfGameLogs.rename(columns={"Name_y":"Name"}).drop("Name_x", axis=1)
 
 #Bringing in stat splits for pitcher
 dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Season_Aggregated_Pitcher_Statistics.xlsx")
@@ -47,8 +53,8 @@ dfpct = dfpct.rename(columns={"xera":"Expected ERA", "xba":"Expected Batting Avg
 
 dfpct = dfpct[['player_name', 'player_id', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
 dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
-dfpct = dfpct.merge(dfPitchers, left_on="player_name", right_on="Baseball_Savant_Name", how="inner")
-dfpct = dfpct.drop(['URL', 'Handedness'], axis=1)
+##dfpct = dfpct.merge(dfPitchers, left_on="player_name", right_on="Baseball_Savant_Name", how="inner")
+##dfpct = dfpct.drop(['URL', 'Handedness'], axis=1)
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
 dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx")
@@ -142,7 +148,12 @@ def show_visibility(chosen_value):
 
 def update_picture(chosen_value):
     beginning_path = "https://github.com/mtdewrocks/matchup/raw/main/assets/"
-    adjusted_name = chosen_value.split()
+    dfpicture = dfPitchers.copy()
+    dfpicture = dfpicture[dfpicture["Baseball_Savant_Name"]==chosen_value]
+    name = dfpicture["Name"].values[0]
+    adjusted_name = name.split()
+    print('print name')
+    print(name)
     if len(adjusted_name)==2:
         adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
         image = beginning_path + adjusted_chosen_value
@@ -161,10 +172,8 @@ def update_picture(chosen_value):
 def update_stats(chosen_value):
     dff = df.copy()
     dff = dff[dff.Name==chosen_value]
-
     dfh = dfHittersFinal.copy()
     dfh = dfh[(dfh.Pitcher==chosen_value) | (dfh["Baseball Savant Name"]==chosen_value)]
-    print(dfh.head())
     dfh = dfh.sort_values(by="Batting Order")
     dfh = dfh.drop("Pitcher", axis=1)
     return dff.to_dict('records'), dfh.to_dict('records')
@@ -175,10 +184,9 @@ def update_stats(chosen_value):
 
 def update_game_logs(chosen_value):
     dffgame = dfGameLogs.copy()
-    print(chosen_value)
-    print(dffgame.shape)
-    dffgame = dffgame[(dffgame.Name==chosen_value) | (dffgame.Baseball_Savant_Name==chosen_value)]
-    print(dffgame.shape)
+    dffgame = dffgame[dffgame.Name==chosen_value]
+    print('printing game logs')
+    print(dffgame.head())
     dffgame = dffgame.drop("Name", axis=1)
     return dffgame.to_dict('records')
 
@@ -208,7 +216,9 @@ def show_pitcher_splits(chosen_value):
 def show_percentiles(chosen_value):
     dfpcts = dfpct.copy()
     print(chosen_value)
-    dfpcts = dfpcts[(dfpcts['player_name']==chosen_value) |(dfpcts['Baseball_Savant_Name']==chosen_value)]
+    dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
+    print('dfpcts')
+    print(dfpcts)
     fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
