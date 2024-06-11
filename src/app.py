@@ -47,7 +47,7 @@ dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team
 #dfSplits['Value'] = dfSplits['Value'].round(3)
 
 #Used for showing the percentile graph
-dfpct = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Percentile_Rankings.xlsx")
+dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Percentile_Rankings.csv")
 dfpct = dfpct.rename(columns={"xera":"Expected ERA", "xba":"Expected Batting Avg", "fb_velocity":"Fastball Velo", "exit_velocity":"Avg Exit Velocity", "k_percent":"K %", "chase_percent":"Chase %",
                               "whiff_percent":"Whiff %", "brl_percent":"Barrel %", "hard_hit_percent":"Hard-Hit %", "bb_percent":"BB %"})
 
