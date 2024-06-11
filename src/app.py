@@ -123,7 +123,7 @@ matchup_tab = html.Div(
 image_path = 'assets/fire.jpg'
 html.Img(src=image_path)
 
-hot_hitter_tab = dbc.Container([dbc.Row([html.Img(src=image_path), id="fire", alt="fire", height=25, width=25, style={'display':'block', 'margin':'auto'}),
+hot_hitter_tab = dbc.Container([dbc.Row([html.Img(src=image_path, id="fire", alt="fire", height=25, width=25, style={'display':'block', 'margin':'auto'}),
                                          html.H1("Hot Hitters", style={'color': 'red', 'fontSize': 40, 'textAlign':'center'})]), dbc.Row(html.H6("Statistics over the last week", style={'fontSize': 20, 'textAlign':'center'})),
                                     dbc.Row(dash_table.DataTable(id="hot-hitters", data=dfHot.to_dict("records"), style_cell={"textAlign":"center"}, sort_action="native"))])
 
