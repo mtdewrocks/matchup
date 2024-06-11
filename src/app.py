@@ -100,7 +100,7 @@ image = ""
 matchup_tab = html.Div(
     [html.Div(html.H1("MLB Matchup Analysis", id="title", style={"textAlign":"center"}), className="row"),
     html.Div([html.Div(dcc.Dropdown(
-            id="pitcher-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(dfPitchers["Name"])]
+            id="pitcher-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(dfPitchers["Baseball_Savant_Name"])]
             ),
         className="two columns"),
     html.Div(
