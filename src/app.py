@@ -121,7 +121,7 @@ matchup_tab = html.Div(
      html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHittersFinal.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
 
 hot_hitter_tab = dbc.Container([dbc.Row([html.Img(
-            id="fire", src=app.get_asset_url("fire.jpg"), alt="fire", height=25, width=25, style={'display':'block'}),
+            id="fire", src=app.get_asset_url("assets/fire.jpg"), alt="fire", height=25, width=25, style={'display':'block', 'margin':'auto'}),
                                          html.H1("Hot Hitters", style={'color': 'red', 'fontSize': 40, 'textAlign':'center'})]), dbc.Row(html.H6("Statistics over the last week", style={'fontSize': 20, 'textAlign':'center'})),
                                     dbc.Row(dash_table.DataTable(id="hot-hitters", data=dfHot.to_dict("records"), style_cell={"textAlign":"center"}, sort_action="native"))])
 
