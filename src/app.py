@@ -65,11 +65,11 @@ dfLastWeek = dfLast7[['Name', 'BA']]
 dfLastWeek = dfLastWeek.rename(columns={"BA":"Last Week Average"} )
 
 #Used for the hitter table
-dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Bats", "Batting Order", "Average", "wOBA",
+dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Savant Name", "Bats", "Batting Order", "Average", "wOBA",
                                    "ISO", "K%", "BB%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher", "Baseball Savant Name"])
 
 print(dfHitters.shape)
-dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="fg_name", right_on="Name", how="left")
+dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="Savant Name", right_on="Name", how="left")
 dfHittersFinal = dfHittersFinal.drop("Name", axis=1)
 print(dfHittersFinal.shape)
                                                                                                                      #"Pitcher", 
