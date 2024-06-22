@@ -66,23 +66,25 @@ dfLastWeek = dfLastWeek.rename(columns={"BA":"Last Week Average"} )
 
 #Used for the hitter table
 dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Savant Name", "Props Name", "Bats", "Batting Order", "Average", "wOBA",
-                                   "ISO", "K%", "BB%"])
+                                   "ISO", "K%", "BB%", "Baseball Savant Name"])
 
 print(dfHitters.shape)
 dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="Savant Name", right_on="Name", how="left")
-dfHittersFinal = dfHittersFinal.drop("Name", "fg_name",  axis=1)
+dfHittersFinal = dfHittersFinal.drop(["Name", "fg_name"],  axis=1)
 
 dfProps = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Daily_Props.xlsx", usecols=["Player", "Over Price", "Line", "market", "bookmakers", "Under Price"])
-dfHitProps = dfHitProps.query("market == hits and bookmaker==draftkings")
-dfHitProps = dfHitsProp.rename(columns={"Over Price":"Hits Over", "Line":"Hits Line", "Under Price":"Hits Under"})
+dfHitProps = dfProps.query("market == 'hits' and bookmakers=='draftkings'")
+dfHitProps = dfHitProps.rename(columns={"Over Price":"Hits Over", "Line":"Hits Line", "Under Price":"Hits Under"})
+dfHitProps = dfHitProps.drop(["market", "bookmakers"], axis=1)
 
-dfKProps = dfProps.query("market == strikeouts and bookmaker==draftkings")
-dfKProps = dfKProp.rename(columns={"Over Price":"Strikeouts Over", "Line":"Strikeouts Line", "Under Price":"Strikeouts Under"})
+dfKProps = dfProps.query("market == 'strikeouts' and bookmakers=='draftkings'")
+dfKProps = dfKProps.rename(columns={"Over Price":"Strikeouts Over", "Line":"Strikeouts Line", "Under Price":"Strikeouts Under"})
+dfKProps = dfKProps.drop(["market", "bookmakers"], axis=1)
 
 dfCombinedProps = dfHitProps.merge(dfKProps, on="Player", how="inner")
 
 dfHittersProps = dfHittersFinal.merge(dfCombinedProps, left_on="Props Name", right_on="Player", how="left")
-dfHitterProps = dfHitterProps.drop("Props Name", axis=1)
+dfHittersProps = dfHittersProps.drop("Props Name", axis=1)
                                                                                                                      #"Pitcher", 
                                    #"Pitcher Average", "Pitcher K%"])
 
@@ -188,7 +190,7 @@ def update_stats(chosen_value):
     dfh = dfHittersProps.copy()
     dfh = dfh[dfh["Baseball Savant Name"]==chosen_value]
     dfh = dfh.sort_values(by="Batting Order")
-    dfh = dfh.drop("Pitcher", axis=1)
+    dfh = dfh.drop(["Baseball Savant Name"], axis=1)
     return dff.to_dict('records'), dfh.to_dict('records')
 
 @app.callback(
