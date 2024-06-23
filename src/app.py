@@ -120,11 +120,36 @@ matchup_tab = html.Div(
      html.Div(html.P(children="Splits data are the weighted average of 2023 and 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
      html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHittersFinal.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
 
-image_path = 'assets/fire.jpg'
-html.Img(src=image_path)
 
-hot_hitter_tab = dbc.Container([dbc.Row([html.Img(src=image_path, id="fire", alt="fire", height=25, width=25, style={'display':'block', 'margin':'auto'}),
-                                         html.H1("Hot Hitters", style={'color': 'red', 'fontSize': 40, 'textAlign':'center'})]), dbc.Row(html.H6("Statistics over the last week", style={'fontSize': 20, 'textAlign':'center'})),
+
+df_props = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/Daily_Props.xlsx')
+df_pitchers = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/My_Pitcher_Listing.xlsx', usecols=["Props Name", "mlb_team_long"])
+df_hitters = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/My_Hitter_Listing.xlsx', usecols=["Props Name", "mlb_team_long"])
+
+df_players = pd.concat([df_pitchers, df_hitters])
+
+df_daily_props = df_props.merge(df_players, left_on="Player", right_on="Props Name", how="outer")
+
+props_tab = html.Div(
+    [html.Div(html.H1("Player Props Analysis", id="props-title", style={"textAlign":"center"}), className="row"),
+    html.Div([html.Div(dcc.Dropdown(
+            id="mlb-team-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["mlb_team_long"])]
+            ),
+        className="two columns"),
+    html.Div([html.Div(dcc.Dropdown(
+            id="mlb-player-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["Player"])]
+            ),
+        className="two columns"),
+    html.Div([html.Div(dcc.Dropdown(
+            id="market-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["market"])]
+            ),
+        className="two columns"),
+    dcc.Checklist(options=[{"label": x, "value":x} for x in sorted(df_daily_props["bookmakers"])])])])])])
+              
+#image_path = 'assets/fire.jpg'
+#html.Img(src=image_path)
+
+hot_hitter_tab = dbc.Container([dbc.Row([html.H1("Hot Hitters", style={'color': 'red', 'fontSize': 40, 'textAlign':'center'})]), dbc.Row(html.H6("Statistics over the last week", style={'fontSize': 20, 'textAlign':'center'})),
                                     dbc.Row(dash_table.DataTable(id="hot-hitters", data=dfHot.to_dict("records"), style_cell={"textAlign":"center"}, sort_action="native"))])
 
 tabs = dbc.Tabs([dbc.Tab(matchup_tab, label="Matchup"), dbc.Tab(hot_hitter_tab, label="Hitter")])
