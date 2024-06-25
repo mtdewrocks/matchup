@@ -43,8 +43,6 @@ dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Seaso
 
 dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team", "Name", "Rotowire Name", "Split", "Baseball Savant Name"], var_name="Statistic", value_name="Value")
 
-#Testing for now
-#dfSplits['Value'] = dfSplits['Value'].round(3)
 
 #Used for showing the percentile graph
 dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitcher_Percentile_Rankings.csv")
@@ -52,9 +50,7 @@ dfpct = dfpct.rename(columns={"xera":"Expected ERA", "xba":"Expected Batting Avg
                               "whiff_percent":"Whiff %", "brl_percent":"Barrel %", "hard_hit_percent":"Hard-Hit %", "bb_percent":"BB %"})
 
 dfpct = dfpct[['player_name', 'player_id', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
-dfpct = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
-##dfpct = dfpct.merge(dfPitchers, left_on="player_name", right_on="Baseball_Savant_Name", how="inner")
-##dfpct = dfpct.drop(['URL', 'Handedness'], axis=1)
+dfpct_reshaped = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
 dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx")
@@ -65,17 +61,29 @@ dfLastWeek = dfLast7[['Name', 'BA']]
 dfLastWeek = dfLastWeek.rename(columns={"BA":"Last Week Average"} )
 
 #Used for the hitter table
-dfHitters = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx", usecols=["fg_name", "Savant Name", "Bats", "Batting Order", "Average", "wOBA",
-                                   "ISO", "K%", "BB%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher", "Baseball Savant Name"])
+dfDaily = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Combined_Daily_Data.xlsx")
+dfHitters = dfDaily[["fg_name", "Savant Name", "Bats", "Batting Order", "Average", "wOBA",
+                                   "ISO", "K%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher", "Baseball Savant Name"]]
 
-print(dfHitters.shape)
+df_hitter_pct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Hitter_Percentile_Rankings.csv", usecols=['player_name', 'xwoba','xba',
+                            'xslg',	'xiso',	'xobp',	'brl_percent',	'exit_velocity', 'hard_hit_percent', 'k_percent','bb_percent','whiff_percent','chase_percent'])
+
 dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="Savant Name", right_on="Name", how="left")
 dfHittersFinal = dfHittersFinal.drop("Name", axis=1)
-print(dfHittersFinal.shape)
-                                                                                                                     #"Pitcher", 
-                                   #"Pitcher Average", "Pitcher K%"])
 
+dfHitterMerge = dfDaily.merge(df_hitter_pct, left_on="Savant Name", right_on="player_name", how="left")
+dfFinalMatchup = dfHitterMerge.merge(dfpct, left_on="Baseball Savant Name", right_on="player_name", how="left", suffixes=["_Hitter", "_Pitcher"])
 
+df_props = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/Daily_Props.xlsx')
+df_pitchers = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/My_Pitcher_Listing.xlsx', usecols=["Props Name", "mlb_team_long"])
+df_hitters = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/My_Hitter_Listing.xlsx', usecols=["Props Name", "mlb_team_long"])
+
+df_players = pd.concat([df_pitchers, df_hitters])
+df_daily_props = df_props.merge(df_players, left_on="Player", right_on="Props Name", how="left")
+df_daily_props = df_daily_props.dropna()
+
+df_props_matchup = df_daily_props.merge(dfFinalMatchup, on="Props Name", how="left")
+print(df_daily_props.columns.tolist())
 
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
 hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'}, 'backgroundColor':'lightcoral'}, {'if':{'filter_query': '{Average} < 0.200', 'column_id':'Average'}, 'backgroundColor':'darkred'},\
@@ -117,42 +125,51 @@ matchup_tab = html.Div(
              className="row"),
      html.Div([html.Div(dash_table.DataTable(id="splits-table", data=dfSplits.to_dict("records"), style_cell={"textAlign":"center"}),style={"padding-top":"25px"}, className="six columns"),
       html.Div(dcc.Graph(figure={}, id="pcts-graph", style={'display': 'none'}), className="two columns")], className="row"),
-     html.Div(html.P(children="Splits data are the weighted average of 2023 and 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
+     html.Div(html.P(children="Splits data are from 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
      html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHittersFinal.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
 
 
 
-df_props = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/Daily_Props.xlsx')
-df_pitchers = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/My_Pitcher_Listing.xlsx', usecols=["Props Name", "mlb_team_long"])
-df_hitters = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/My_Hitter_Listing.xlsx', usecols=["Props Name", "mlb_team_long"])
 
-df_players = pd.concat([df_pitchers, df_hitters])
+#df_daily_props.to_excel(r'C:\Users\shawn\Python\Baseball\Daily Statistics\Testing Props.xlsx', index=False)
 
-df_daily_props = df_props.merge(df_players, left_on="Player", right_on="Props Name", how="outer")
+#unique_teams = df_daily_props['mlb_team_long'].unique()
+
+
+#team_options = [{"label": value, "value": value} for value in unique_teams]
 
 props_tab = html.Div(
     [html.Div(html.H1("Player Props Analysis", id="props-title", style={"textAlign":"center"}), className="row"),
+    html.Div(html.Br()),
     html.Div([html.Div(dcc.Dropdown(
-            id="mlb-team-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["mlb_team_long"])]
+            id="mlb-team-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["mlb_team_long"].unique())],
             ),
-        className="two columns"),
-    html.Div([html.Div(dcc.Dropdown(
-            id="mlb-player-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["Player"])]
+        className="three columns"),
+    html.Div(dcc.Dropdown(
+            id="mlb-player-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["Player"].unique())],
             ),
-        className="two columns"),
-    html.Div([html.Div(dcc.Dropdown(
-            id="market-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["market"])]
+        className="three columns"),
+    html.Div(dcc.Dropdown(
+            id="market-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["market"].unique())],
             ),
-        className="two columns"),
-    dcc.Checklist(options=[{"label": x, "value":x} for x in sorted(df_daily_props["bookmakers"])])])])])])
-              
+        className="three columns"),
+    html.Div(dcc.Dropdown(
+            id="bookmaker-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["bookmakers"].unique())],
+            ),
+        className="three columns")], className="row"),
+        html.Div(
+        dash_table.DataTable(
+            id="props-data-table", data=df_daily_props.to_dict("records"), style_table={'margin-top':'15px'}, style_cell={"textAlign":"center"}, sort_action="native"),
+        className="six columns")])
+
+
 #image_path = 'assets/fire.jpg'
 #html.Img(src=image_path)
 
 hot_hitter_tab = dbc.Container([dbc.Row([html.H1("Hot Hitters", style={'color': 'red', 'fontSize': 40, 'textAlign':'center'})]), dbc.Row(html.H6("Statistics over the last week", style={'fontSize': 20, 'textAlign':'center'})),
                                     dbc.Row(dash_table.DataTable(id="hot-hitters", data=dfHot.to_dict("records"), style_cell={"textAlign":"center"}, sort_action="native"))])
 
-tabs = dbc.Tabs([dbc.Tab(matchup_tab, label="Matchup"), dbc.Tab(hot_hitter_tab, label="Hitter")])
+tabs = dbc.Tabs([dbc.Tab(matchup_tab, label="Matchup"), dbc.Tab(hot_hitter_tab, label="Hitter"), dbc.Tab(props_tab, label="Player Props")])
 app.layout = dbc.Row(dbc.Col(tabs))
 
 
@@ -179,8 +196,6 @@ def update_picture(chosen_value):
     dfpicture = dfpicture[dfpicture["Baseball_Savant_Name"]==chosen_value]
     name = dfpicture["Name"].values[0]
     adjusted_name = name.split()
-    print('print name')
-    print(name)
     if len(adjusted_name)==2:
         adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
         image = beginning_path + adjusted_chosen_value
@@ -212,8 +227,6 @@ def update_stats(chosen_value):
 def update_game_logs(chosen_value):
     dffgame = dfGameLogs.copy()
     dffgame = dffgame[dffgame.Name==chosen_value]
-    print('printing game logs')
-    print(dffgame.head())
     dffgame = dffgame.drop("Name", axis=1)
     return dffgame.to_dict('records')
 
@@ -241,11 +254,8 @@ def show_pitcher_splits(chosen_value):
     Input(component_id="pitcher-dropdown", component_property="value"))
 
 def show_percentiles(chosen_value):
-    dfpcts = dfpct.copy()
-    print(chosen_value)
+    dfpcts = dfpct_reshaped.copy()
     dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
-    print('dfpcts')
-    print(dfpcts)
     fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
@@ -253,6 +263,55 @@ def show_percentiles(chosen_value):
     #fig.update_layout(title_x=0.5, title_font_weight="bold", layout_coloraxis_showscale=False)
     fig.update(layout_coloraxis_showscale=False)
     return fig
+
+
+#Update players available
+@app.callback(
+    Output("mlb-player-dropdown", "options"),
+    [Input("mlb-team-dropdown", "value")], prevent_initial_call=True)
+def update_players(selected_team):
+    if selected_team:
+        players = df_daily_props[df_daily_props["mlb_team_long"] == selected_team]["Player"].unique()
+        return [{"label": player, "value": player} for player in players]
+    else:
+        return df_daily_props["Player"].unique()
+
+#Update markets available
+
+@app.callback(
+    Output("market-dropdown", "options"),
+    [Input("mlb-player-dropdown", "value")], prevent_initial_call=True)
+
+def update_market(selected_market):
+    if selected_market:
+        markets = df_daily_props[df_daily_props["Player"] == selected_market]["market"].unique()
+        return [{"label": market, "value": market} for market in markets]
+    else:
+        return df_daily_props["market"].unique()
+
+@app.callback(
+    Output(component_id="props-data-table", component_property="data"),
+    [Input(component_id="mlb-team-dropdown", component_property="value"), Input(component_id="mlb-player-dropdown", component_property="value"),
+     Input(component_id="market-dropdown", component_property="value"), Input(component_id="bookmaker-dropdown", component_property="value")])
+
+def update_stats(chosen_team, chosen_player, chosen_market, chosen_bookmaker):
+    dff_props = df_props_matchup.copy()
+    dff_props = dff_props.drop(["commence_time", "Props Name", "home_team", "away_team", "fg_name", "Savant Name", "Split Hitter", "HR Hitter", "SB", "CS"], axis=1)
+    if chosen_team:
+        dff_props = dff_props[dff_props["mlb_team_long"] == chosen_team]
+    if chosen_player:
+        dff_props = dff_props[dff_props["Player"] == chosen_player]
+    if chosen_market:
+        dff_props = dff_props[dff_props["market"] == chosen_market]
+        if chosen_market=="hits":
+            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Pitcher Average", "Pitcher K%", "Weighted BB% Pitcher", "xba", "Expected Batting Avg"]]
+        if chosen_market=="strikeouts":
+            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "whiff_percent", "chase_percent", "Pitcher K%", "Weighted BB% Pitcher", "Whiff %", "Chase %"]]
+    if chosen_bookmaker:
+        dff_props = dff_props[dff_props["bookmakers"] == chosen_bookmaker]
+    #
+    #dff_props = dff_props.reindex(columns=["Player", "market", "bookmakers", "Line", "Over Price", "Under Price"])
+    return dff_props.to_dict('records')
 
 
 #May need to restructure percentile data to accomodate sort order as follows
