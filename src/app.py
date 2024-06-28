@@ -80,10 +80,11 @@ df_hitters = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/asset
 
 df_players = pd.concat([df_pitchers, df_hitters])
 df_daily_props = df_props.merge(df_players, left_on="Player", right_on="Props Name", how="left")
-df_daily_props = df_daily_props.dropna()
+
+df_daily_props = df_daily_props.dropna(subset=["mlb_team_long"])
 
 df_props_matchup = df_daily_props.merge(dfFinalMatchup, on="Props Name", how="left")
-print(df_daily_props.columns.tolist())
+
 
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
 hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'}, 'backgroundColor':'lightcoral'}, {'if':{'filter_query': '{Average} < 0.200', 'column_id':'Average'}, 'backgroundColor':'darkred'},\
@@ -137,8 +138,6 @@ matchup_tab = html.Div(
 
 
 #team_options = [{"label": value, "value": value} for value in unique_teams]
-print(df_daily_props.market.unique())
-
 props_tab = html.Div(
     [html.Div(html.H1("Player Props Analysis", id="props-title", style={"textAlign":"center"}), className="row"),
     html.Div(html.Br()),
