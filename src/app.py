@@ -84,6 +84,7 @@ df_daily_props = df_props.merge(df_players, left_on="Player", right_on="Props Na
 df_daily_props = df_daily_props.dropna(subset=["mlb_team_long"])
 
 df_props_matchup = df_daily_props.merge(dfFinalMatchup, on="Props Name", how="left")
+print(df_props_matchup.columns.tolist())
 
 
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
