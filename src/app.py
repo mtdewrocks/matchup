@@ -137,6 +137,7 @@ matchup_tab = html.Div(
 
 
 #team_options = [{"label": value, "value": value} for value in unique_teams]
+print(df_daily_props.market.unique())
 
 props_tab = html.Div(
     [html.Div(html.H1("Player Props Analysis", id="props-title", style={"textAlign":"center"}), className="row"),
