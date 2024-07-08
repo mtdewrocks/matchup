@@ -53,7 +53,7 @@ dfpct = dfpct.drop("year", axis=1)
 suffix = '_pitcher'
 dfpct = dfpct.rename(columns=lambda x: x + suffix)
 
-dfpct = dfpct[['player_name_pitcher', 'player_id_pitcher', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
+dfpct = dfpct[['player_name_pitcher', 'player_id_pitcher', 'Expected ERA', 'Expected Batting Avg_pitcher', 'Fastball Velo_pitcher', 'Avg Exit Velocity_pitcher', 'Chase %_pitcher', 'Whiff %_pitcher', 'K %_pitcher', 'BB %_pitcher', 'Barrel %_pitcher', 'Hard-Hit %_pitcher']]
 dfpct_reshaped = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
