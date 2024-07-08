@@ -70,9 +70,8 @@ dfHitters = dfDaily[["fg_name", "Savant Name", "Bats", "Batting Order", "Average
                                    "ISO", "K%", "BB%", "Fly Ball %", "Hard Contact %", "Pitcher", "Baseball Savant Name"]]
 
 df_hitter_pct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Hitter_Percentile_Rankings.csv", usecols=['player_name', 'xwoba','xba',
-                            'xslg',	'xiso',	'xobp',	'brl_percent',	'exit_velocity', 'hard_hit_percent', 'k_percent','bb_percent','whiff_percent','chase_percent'])
+                            'xslg', 'xiso',	'xobp',	'brl_percent',	'exit_velocity', 'hard_hit_percent', 'k_percent','bb_percent','whiff_percent','chase_percent'])
 
-df_hitter_pct = df_hitter_pct.drop("year", axis=1)
 suffix = '_hitter'
 df_hitter_pct = df_hitter_pct.rename(columns=lambda x: x + suffix)
 
