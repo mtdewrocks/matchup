@@ -49,7 +49,11 @@ dfpct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitch
 dfpct = dfpct.rename(columns={"xera":"Expected ERA", "xba":"Expected Batting Avg", "fb_velocity":"Fastball Velo", "exit_velocity":"Avg Exit Velocity", "k_percent":"K %", "chase_percent":"Chase %",
                               "whiff_percent":"Whiff %", "brl_percent":"Barrel %", "hard_hit_percent":"Hard-Hit %", "bb_percent":"BB %"})
 
-dfpct = dfpct[['player_name', 'player_id', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
+dfpct = dfpct.drop("year", axis=1)
+suffix = '_pitcher'
+dfpct = dfpct.rename(columns=lambda x: x + suffix)
+
+dfpct = dfpct[['player_name_pitcher', 'player_id_pitcher', 'year', 'Expected ERA', 'Expected Batting Avg', 'Fastball Velo', 'Avg Exit Velocity', 'Chase %', 'Whiff %', 'K %', 'BB %', 'Barrel %', 'Hard-Hit %']]
 dfpct_reshaped = pd.melt(dfpct, id_vars=["player_name", "player_id", "year"], var_name="Statistic", value_name="Percentile")
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
@@ -68,6 +72,10 @@ dfHitters = dfDaily[["fg_name", "Savant Name", "Bats", "Batting Order", "Average
 df_hitter_pct = pd.read_csv("https://github.com/mtdewrocks/matchup/raw/main/assets/Hitter_Percentile_Rankings.csv", usecols=['player_name', 'xwoba','xba',
                             'xslg',	'xiso',	'xobp',	'brl_percent',	'exit_velocity', 'hard_hit_percent', 'k_percent','bb_percent','whiff_percent','chase_percent'])
 
+df_hitter_pct = df_hitter_pct.drop("year", axis=1)
+suffix = '_hitter'
+df_hitter_pct = df_hitter_pct.rename(columns=lambda x: x + suffix)
+
 dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="Savant Name", right_on="Name", how="left")
 dfHittersFinal = dfHittersFinal.drop("Name", axis=1)
 
@@ -83,8 +91,7 @@ df_daily_props = df_props.merge(df_players, left_on="Player", right_on="Props Na
 
 df_daily_props = df_daily_props.dropna(subset=["mlb_team_long"])
 
-df_props_matchup = df_daily_props.merge(dfFinalMatchup, on="Props Name", how="left")
-print(df_props_matchup.columns.tolist())
+df_props_matchup = df_daily_props.merge(dfFinalMatchup, on=["Props Name", "mlb_team_long"], how="left")
 
 
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
@@ -308,9 +315,9 @@ def update_stats(chosen_team, chosen_player, chosen_market, chosen_bookmaker):
     if chosen_market:
         dff_props = dff_props[dff_props["market"] == chosen_market]
         if chosen_market=="hits":
-            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Pitcher Average", "Pitcher K%", "Weighted BB% Pitcher", "xba", "Expected Batting Avg"]]
+            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Pitcher Average", "Pitcher K%", "Weighted BB% Pitcher", "Expected Batting Avg_hitter", "Expected Batting Avg_pitcher"]]
         if chosen_market=="strikeouts":
-            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "whiff_percent", "chase_percent", "Pitcher K%", "Weighted BB% Pitcher", "Whiff %", "Chase %"]]
+            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Whiff %_hitter", "Chase %_hitter", "Pitcher K%", "Weighted BB% Pitcher", "Whiff %_pitcher", "Chase %_pitcher"]]
     if chosen_bookmaker:
         dff_props = dff_props[dff_props["bookmakers"] == chosen_bookmaker]
     #
