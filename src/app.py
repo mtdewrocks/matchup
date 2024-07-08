@@ -78,8 +78,8 @@ df_hitter_pct = df_hitter_pct.rename(columns=lambda x: x + suffix)
 dfHittersFinal = dfHitters.merge(dfLastWeek, left_on="Savant Name", right_on="Name", how="left")
 dfHittersFinal = dfHittersFinal.drop("Name", axis=1)
 
-dfHitterMerge = dfDaily.merge(df_hitter_pct, left_on="Savant Name", right_on="player_name", how="left")
-dfFinalMatchup = dfHitterMerge.merge(dfpct, left_on="Baseball Savant Name", right_on="player_name", how="left", suffixes=["_Hitter", "_Pitcher"])
+dfHitterMerge = dfDaily.merge(df_hitter_pct, left_on="Savant Name", right_on="player_name_hitter", how="left")
+dfFinalMatchup = dfHitterMerge.merge(dfpct, left_on="Baseball Savant Name", right_on="player_name_pitcher", how="left", suffixes=["_Hitter", "_Pitcher"])
 
 df_props = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/Daily_Props.xlsx')
 df_pitchers = pd.read_excel('https://github.com/mtdewrocks/matchup/raw/main/assets/My_Pitcher_Listing.xlsx', usecols=["Props Name", "mlb_team_long"])
