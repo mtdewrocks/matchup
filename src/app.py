@@ -54,7 +54,10 @@ suffix = '_pitcher'
 dfpct = dfpct.rename(columns=lambda x: x + suffix)
 
 dfpct = dfpct[['player_name_pitcher', 'player_id_pitcher', 'Expected ERA_pitcher', 'Expected Batting Avg_pitcher', 'Fastball Velo_pitcher', 'Avg Exit Velocity_pitcher', 'Chase %_pitcher', 'Whiff %_pitcher', 'K %_pitcher', 'BB %_pitcher', 'Barrel %_pitcher', 'Hard-Hit %_pitcher']]
-dfpct_reshaped = pd.melt(dfpct, id_vars=["player_name_pitcher", "player_id_pitcher"], var_name="Statistic", value_name="Percentile")
+
+suffix = '_pitcher'
+dfpct_chart = dfpct.rename(columns=lambda x: x - suffix)
+dfpct_reshaped = pd.melt(dfpct_chart, id_vars=["player_name", "player_id"], var_name="Statistic", value_name="Percentile")
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
 dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx")
@@ -263,6 +266,7 @@ def show_pitcher_splits(chosen_value):
 def show_percentiles(chosen_value):
     dfpcts = dfpct_reshaped.copy()
     dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
+    
     fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
