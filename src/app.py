@@ -56,7 +56,7 @@ dfpct = dfpct.rename(columns=lambda x: x + suffix)
 dfpct = dfpct[['player_name_pitcher', 'player_id_pitcher', 'Expected ERA_pitcher', 'Expected Batting Avg_pitcher', 'Fastball Velo_pitcher', 'Avg Exit Velocity_pitcher', 'Chase %_pitcher', 'Whiff %_pitcher', 'K %_pitcher', 'BB %_pitcher', 'Barrel %_pitcher', 'Hard-Hit %_pitcher']]
 
 suffix = '_pitcher'
-dfpct_chart = dfpct.rename(columns=lambda x: x - suffix)
+dfpct_chart = dfpct.rename(columns=lambda x: x.replace(r'_pitcher', ''))
 dfpct_reshaped = pd.melt(dfpct_chart, id_vars=["player_name", "player_id"], var_name="Statistic", value_name="Percentile")
 
 #Gets Hitters with Over .350 avg and 20 AB in last week
