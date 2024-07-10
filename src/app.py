@@ -307,10 +307,11 @@ def update_market(selected_market):
 
 def update_stats(chosen_team, chosen_player, chosen_market, chosen_bookmaker):
     dff_props = df_props_matchup.copy()
+    print(dff_props.columns.tolist())
     dff_props = dff_props.drop(["commence_time", "Props Name", "home_team", "away_team", "fg_name", "Savant Name", "Split Hitter", "HR Hitter", "SB", "CS", "Bats",
                                 "GB%", "Fly Ball %", "wOBA", "Weighted OBP", "Weighted Slugging", "Weighted OBPS", "Team", "Handedness", "Opposing Team",
                                 "Baseball Savant Name", "Split Pitcher", "Weighted FIP", "Weighted GB% Pitcher", "Weighted FB% Pitcher", "Weighted HR/FB",
-                                "player_name_Hitter", "player_name_Pitcher", "player_id", "year"], axis=1)
+                                "player_name_hitter", "player_name_pitcher", "player_id_pitcher"], axis=1)
     if chosen_team:
         dff_props = dff_props[dff_props["mlb_team_long"] == chosen_team]
     if chosen_player:
