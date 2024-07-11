@@ -59,6 +59,15 @@ suffix = '_pitcher'
 dfpct_chart = dfpct.rename(columns=lambda x: x.replace(r'_pitcher', ''))
 dfpct_reshaped = pd.melt(dfpct_chart, id_vars=["player_name", "player_id"], var_name="Statistic", value_name="Percentile")
 
+def convert_name(name):
+    last_name, first_name = name.split(', ')
+    return f"{first_name} {last_name}"
+
+
+
+# Apply the function to the cell containing the name
+dfpct_reshaped['converted_name'] = dfpct_reshaped['player_name'].apply(convert_name)
+
 #Gets Hitters with Over .350 avg and 20 AB in last week
 dfLast7 = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Last_Week_Stats.xlsx")
 
@@ -265,7 +274,8 @@ def show_pitcher_splits(chosen_value):
 
 def show_percentiles(chosen_value):
     dfpcts = dfpct_reshaped.copy()
-    dfpcts = dfpcts[dfpcts['player_name']==chosen_value]
+    dfpcts = dfpcts[dfpcts['converted_name']==chosen_value]
+    print(dfpcts[["player_name", "converted_name"]])
     
     fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
@@ -307,7 +317,6 @@ def update_market(selected_market):
 
 def update_stats(chosen_team, chosen_player, chosen_market, chosen_bookmaker):
     dff_props = df_props_matchup.copy()
-    print(dff_props.columns.tolist())
     dff_props = dff_props.drop(["commence_time", "Props Name", "home_team", "away_team", "fg_name", "Savant Name", "Split Hitter", "HR Hitter", "SB", "CS", "Bats",
                                 "GB%", "Fly Ball %", "wOBA", "Weighted OBP", "Weighted Slugging", "Weighted OBPS", "Team", "Handedness", "Opposing Team",
                                 "Baseball Savant Name", "Split Pitcher", "Weighted FIP", "Weighted GB% Pitcher", "Weighted FB% Pitcher", "Weighted HR/FB",
