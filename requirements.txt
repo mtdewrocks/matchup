@@ -1,4 +1,4 @@
-dash==2.14.2
+dash
 openpyxl==3.1.2
 numpy==1.24.4
 pandas==2.0.1
