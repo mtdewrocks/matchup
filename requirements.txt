@@ -6,5 +6,5 @@ plotly==5.18.0
 gunicorn
 dash-tools
 requests
-packaging>=23
+setuptools <71
 
