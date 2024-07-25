@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import os
-from dash import Dash, dcc, html, Input, Output, dash_table
+from dash import Dash, dcc, html, Input, Output, State, dash_table
 import openpyxl
 import requests
 from io import BytesIO
@@ -171,11 +171,12 @@ props_tab = html.Div(
     html.Div(dcc.Dropdown(
             id="market-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["market"].unique())],
             ),
-        className="three columns"),
+        className="two columns"),
     html.Div(dcc.Dropdown(
             id="bookmaker-dropdown", multi=False, options=[{"label": x, "value":x} for x in sorted(df_daily_props["bookmakers"].unique())],
             ),
-        className="three columns")], className="row"),
+        className="two columns"), html.Div(html.Button("Apply Filters", id="props-filter-button"), className="two columns"),
+              html.Div(id='output')], className="row"),
         html.Div(
         dash_table.DataTable(
             id="props-data-table", data=df_daily_props.to_dict("records"), style_table={'margin-top':'15px'}, style_cell={"textAlign":"center"}, sort_action="native"),
@@ -286,56 +287,58 @@ def show_percentiles(chosen_value):
     return fig
 
 
-#Update players available
-@app.callback(
-    Output("mlb-player-dropdown", "options"),
-    [Input("mlb-team-dropdown", "value")], prevent_initial_call=True)
-def update_players(selected_team):
-    if selected_team:
-        players = df_daily_props[df_daily_props["mlb_team_long"] == selected_team]["Player"].unique()
-        return [{"label": player, "value": player} for player in players]
-    else:
-        return df_daily_props["Player"].unique()
-
-#Update markets available
-
-@app.callback(
-    Output("market-dropdown", "options"),
-    [Input("mlb-player-dropdown", "value")], prevent_initial_call=True)
-
-def update_market(selected_market):
-    if selected_market:
-        markets = df_daily_props[df_daily_props["Player"] == selected_market]["market"].unique()
-        return [{"label": market, "value": market} for market in markets]
-    else:
-        return df_daily_props["market"].unique()
+###Update players available
+##@app.callback(
+##    Output("mlb-player-dropdown", "options"),
+##    [Input("mlb-team-dropdown", "value")], prevent_initial_call=True)
+##def update_players(selected_team):
+##    if selected_team:
+##        players = df_daily_props[df_daily_props["mlb_team_long"] == selected_team]["Player"].unique()
+##        return [{"label": player, "value": player} for player in players]
+##    else:
+##        return df_daily_props["Player"].unique()
+##
+###Update markets available
+##
+##@app.callback(
+##    Output("market-dropdown", "options"),
+##    [Input("mlb-player-dropdown", "value")], prevent_initial_call=True)
+##
+##def update_market(selected_market):
+##    if selected_market:
+##        markets = df_daily_props[df_daily_props["Player"] == selected_market]["market"].unique()
+##        return [{"label": market, "value": market} for market in markets]
+##    else:
+##        return df_daily_props["market"].unique()
 
 @app.callback(
     Output(component_id="props-data-table", component_property="data"),
-    [Input(component_id="mlb-team-dropdown", component_property="value"), Input(component_id="mlb-player-dropdown", component_property="value"),
-     Input(component_id="market-dropdown", component_property="value"), Input(component_id="bookmaker-dropdown", component_property="value")])
+    Input('props-filter-button', component_property="n_clicks"),
+    [State(component_id="mlb-team-dropdown", component_property="value"), State(component_id="mlb-player-dropdown", component_property="value"),
+     State(component_id="market-dropdown", component_property="value"), State(component_id="bookmaker-dropdown", component_property="value")])
 
-def update_stats(chosen_team, chosen_player, chosen_market, chosen_bookmaker):
-    dff_props = df_props_matchup.copy()
-    dff_props = dff_props.drop(["commence_time", "Props Name", "home_team", "away_team", "fg_name", "Savant Name", "Split Hitter", "HR Hitter", "SB", "CS", "Bats",
-                                "GB%", "Fly Ball %", "wOBA", "Weighted OBP", "Weighted Slugging", "Weighted OBPS", "Team", "Handedness", "Opposing Team",
-                                "Baseball Savant Name", "Split Pitcher", "Weighted FIP", "Weighted GB% Pitcher", "Weighted FB% Pitcher", "Weighted HR/FB",
-                                "player_name_hitter", "player_name_pitcher", "player_id_pitcher"], axis=1)
-    if chosen_team:
-        dff_props = dff_props[dff_props["mlb_team_long"] == chosen_team]
-    if chosen_player:
-        dff_props = dff_props[dff_props["Player"] == chosen_player]
-    if chosen_market:
-        dff_props = dff_props[dff_props["market"] == chosen_market]
-        if chosen_market=="hits":
-            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Pitcher Average", "Pitcher K%", "Weighted BB% Pitcher", "Expected Batting Avg_hitter", "Expected Batting Avg_pitcher"]]
-        if chosen_market=="strikeouts":
-            dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Whiff %_hitter", "Chase %_hitter", "Pitcher K%", "Weighted BB% Pitcher", "Whiff %_pitcher", "Chase %_pitcher"]]
-    if chosen_bookmaker:
-        dff_props = dff_props[dff_props["bookmakers"] == chosen_bookmaker]
-    #
-    #dff_props = dff_props.reindex(columns=["Player", "market", "bookmakers", "Line", "Over Price", "Under Price"])
-    return dff_props.to_dict('records')
+def update_stats(n_clicks, chosen_team, chosen_player, chosen_market, chosen_bookmaker):
+    if n_clicks>0:
+        dff_props = df_props_matchup.copy()
+        dff_props = dff_props.drop(["commence_time", "Props Name", "home_team", "away_team", "fg_name", "Savant Name", "Split Hitter", "HR Hitter", "SB", "CS", "Bats",
+                                    "GB%", "Fly Ball %", "wOBA", "Weighted OBP", "Weighted Slugging", "Weighted OBPS", "Team", "Handedness", "Opposing Team",
+                                    "Baseball Savant Name", "Split Pitcher", "Weighted FIP", "Weighted GB% Pitcher", "Weighted FB% Pitcher", "Weighted HR/FB",
+                                    "player_name_hitter", "player_name_pitcher", "player_id_pitcher"], axis=1)
+        if chosen_team:
+            dff_props = dff_props[dff_props["mlb_team_long"] == chosen_team]
+        if chosen_player:
+            dff_props = dff_props[dff_props["Player"] == chosen_player]
+        if chosen_market:
+            dff_props = dff_props[dff_props["market"] == chosen_market]
+            if chosen_market=="hits":
+                dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Pitcher Average", "Pitcher K%", "Weighted BB% Pitcher", "Expected Batting Avg_hitter", "Expected Batting Avg_pitcher"]]
+            if chosen_market=="strikeouts":
+                dff_props = dff_props[["Player", "market", "bookmakers", "Line", "Over Price", "Under Price", "Batting Order", "Average", "K%", "BB%", "Whiff %_hitter", "Chase %_hitter", "Pitcher K%", "Weighted BB% Pitcher", "Whiff %_pitcher", "Chase %_pitcher"]]
+        if chosen_bookmaker:
+            dff_props = dff_props[dff_props["bookmakers"] == chosen_bookmaker]
+        #
+        #dff_props = dff_props.reindex(columns=["Player", "market", "bookmakers", "Line", "Over Price", "Under Price"])
+        return dff_props.to_dict('records')
 
 
 #May need to restructure percentile data to accomodate sort order as follows
