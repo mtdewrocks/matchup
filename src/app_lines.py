@@ -105,6 +105,29 @@ df_daily_props = df_daily_props.dropna(subset=["mlb_team_long"])
 df_props_matchup = df_daily_props.merge(dfFinalMatchup, on=["Props Name", "mlb_team_long"], how="left")
 
 
+
+df_pitcher = df_props.copy()
+df_pitcher = df_pitcher[["Player", "market", "Line", "bookmakers"]]
+df_fanduel = df_pitcher.query("bookmakers=='fanduel'")
+
+#new_order = ["pitcher_outs", "pitcher_strikeouts", "pitcher_hits_allowed", "pitcher_walks"]
+
+
+df_draftkings = df_pitcher.query("bookmakers=='draftkings'")
+df_draftkings = df_draftkings.query("market != 'pitcher_strikeouts_alternate'")
+
+
+df_combined = df_draftkings.merge(df_fanduel, on=["Player", "market"], suffixes=["_draftkings", "_fanduel"], how="left")
+
+df_mgm = df_pitcher.query("bookmakers=='betmgm'")
+df_mgm = df_mgm.rename(columns={"Line":"Line_mgm"})
+
+df_all_lines = df_combined.merge(df_mgm, on=["Player", "market"], how="left")
+df_all_lines = df_all_lines.rename(columns={"Line_draftkings":"Draftkings", "Line_fanduel":"Fanduel", "Line_mgm":"Betmgm"})
+
+
+
+
 #game_log_style = [{'if':{'filter_query': '{ER} > 1', 'column_id':'ER'}, 'backgroundColor':'pink'},{'if':{'filter_query': '{ER} < 1', 'column_id':'ER'}, 'backgroundColor':'blue'}]
 hitter_style = [{'if':{'filter_query': '{Average} < .250', 'column_id':'Average'}, 'backgroundColor':'lightcoral'}, {'if':{'filter_query': '{Average} < 0.200', 'column_id':'Average'}, 'backgroundColor':'darkred'},\
                 {'if':{'filter_query': '{Average} >= 0.250', 'column_id':'Average'}, 'backgroundColor':'dodgerblue'}, {'if':{'filter_query': '{Average} >= 0.275', 'column_id':'Average'}, 'backgroundColor':'blue'},
@@ -143,11 +166,11 @@ matchup_tab = html.Div(
     html.Div(dash_table.DataTable(id="game-log-table", data=dfGameLogs.to_dict("records"), style_cell={"textAlign":"center", "fontWeight":"bold", "fontSize":"30px"}),
              style={"padding-top":"25px"},
              className="row"),
-     html.Div([html.Div(dash_table.DataTable(id="splits-table", data=dfSplits.to_dict("records"), style_cell={"textAlign":"center"}),style={"padding-top":"25px"}, className="six columns"),
-      html.Div(dcc.Graph(figure={}, id="pcts-graph", style={'display': 'none'}), className="two columns")], className="row"),
-     html.Div(html.P(children="Splits data are from 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
-     html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHittersFinal.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
-
+     html.Div([html.Div(dash_table.DataTable(id="splits-table", data=dfSplits.to_dict("records"), style_cell={"textAlign":"center"}), className="six columns"),
+      html.Div(dcc.Graph(figure={}, id="pcts-graph", style={'display': 'none'}), className="four columns")], className="row"),
+      html.Div(html.P(children="Splits data are from 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
+     html.Div([html.Div(dash_table.DataTable(id="hitter-table", data=dfHittersFinal.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="seven columns"),
+                        html.Div(dash_table.DataTable(id="lines-table", data=df_all_lines.to_dict("records"), style_cell={"textAlign":"center"}),style={"padding-top":"25px", "padding-left":"15px"}, className="three columns")], className="row")])
 
 
 
@@ -285,6 +308,16 @@ def show_percentiles(chosen_value):
     #fig.update_layout(title_x=0.5, title_font_weight="bold", layout_coloraxis_showscale=False)
     fig.update(layout_coloraxis_showscale=False)
     return fig
+
+@app.callback(
+    Output(component_id="lines-table", component_property="data"),
+    Input(component_id="pitcher-dropdown", component_property="value"))
+
+def update_lines(chosen_value):
+    df_lines = df_all_lines.copy()
+    df_lines = df_lines[["Player", "market", "Draftkings", "Betmgm", "Fanduel"]]
+    df_lines = df_lines[df_lines["Player"]==chosen_value]
+    return df_lines.to_dict('records')
 
 
 ###Update players available
