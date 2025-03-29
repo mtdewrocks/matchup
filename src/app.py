@@ -24,7 +24,7 @@ df = df.rename(columns={"Name_y":"Name"}).drop("Name_x", axis=1)
 df = df[["Name", "Baseball_Savant_Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "K/IP", "WHIP"]]
 
 #Used for getting the game by game logs - maybe limit to last five starts?
-dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/2024_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
+dfGameLogs = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/2025_Pitching_Logs.xlsx", usecols=["Name", "Date", "Opp", "W", "L", "IP", "BF", "H", "R", "ER", "HR", "BB", "SO","Pit"])
 dfGameLogs['Date'] = pd.to_datetime(dfGameLogs['Date'], format="%Y-%m-%d").dt.date
 dfGameLogs = dfGameLogs.rename(columns={"Opp":"Opponent"})
 
@@ -145,7 +145,7 @@ matchup_tab = html.Div(
              className="row"),
      html.Div([html.Div(dash_table.DataTable(id="splits-table", data=dfSplits.to_dict("records"), style_cell={"textAlign":"center"}),style={"padding-top":"25px"}, className="six columns"),
       html.Div(dcc.Graph(figure={}, id="pcts-graph", style={'display': 'none'}), className="two columns")], className="row"),
-     html.Div(html.P(children="Splits data are from 2024.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
+     html.Div(html.P(children="Splits data are from 2024 and 2025.", id="splits-note", style={'display':'none', 'font-weight':'bold'}),className="row"),
      html.Div(html.Div(dash_table.DataTable(id="hitter-table", data=dfHittersFinal.to_dict("records"), style_cell={"textAlign":"center"}, style_data_conditional=hitter_style),style={"padding-top":"25px"}, className="row"))])
 
 
@@ -278,7 +278,7 @@ def show_percentiles(chosen_value):
     dfpcts = dfpcts[dfpcts['converted_name']==chosen_value]
     print(dfpcts[["player_name", "converted_name"]])
     
-    fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2024 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
+    fig = px.bar(dfpcts, x="Percentile", y="Statistic", title="2025 MLB Percentile Rankings", category_orders={"Statistic": ['Fastball Velo', 'Avg Exit Velocity', "Chase %", "Whiff %", "K %", "BB %", "Barrel %", "Hard-Hit %"]}, color="Percentile", orientation="h",
              color_continuous_scale="RdBu_r",
                     color_continuous_midpoint=40, text="Percentile", width=600, height=600)
     fig.update_xaxes(range=[0, 100])
