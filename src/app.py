@@ -41,7 +41,7 @@ dfS = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Seaso
 #dfS = dfS.reindex(["TBF", "Weighted AVG", "Weighted wOBA"])
 
 
-dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team", "Name", "Rotowire Name", "Split", "Baseball Savant Name"], var_name="Statistic", value_name="Value")
+dfSplits = pd.melt(dfS, id_vars=["Pitcher", "Team", "Handedness", "Opposing Team", "Name", "Rotowire Name", "Split", "Baseball Savant Name", "Tm"], var_name="Statistic", value_name="Value")
 
 
 #Used for showing the percentile graph
