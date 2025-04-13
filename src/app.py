@@ -14,14 +14,14 @@ df = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitche
 df['K/IP'] = df["SO"]/df["IP"]
 df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
-
+print("none")
 #Used for filling the dropdown menu
 dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitchers_to_Scrape.xlsx", usecols=["Savant Name", "Savant ID"])
 dfPitchers = dfPitchers.rename(columns={"Savant Name":"Baseball_Savant_Name"})
 
 df = df.merge(dfPitchers, left_on="Name", right_on="Baseball_Savant_Name", how="left")
 
-df = df.rename(columns={"Name_y":"Name"}).drop("Name_x", axis=1)
+#df = df.rename(columns={"Name_y":"Name"}).drop("Name_x", axis=1)
 df = df[["Name", "Baseball_Savant_Name", "Handedness", "GS", "W", "L", "ERA", "IP", "SO", "K/IP", "WHIP"]]
 
 #Used for getting the game by game logs - maybe limit to last five starts?
