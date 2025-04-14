@@ -213,10 +213,13 @@ def show_visibility(chosen_value):
 
 def update_picture(chosen_value):
     beginning_path = "https://github.com/mtdewrocks/matchup/raw/main/assets/"
-    dfpicture = dfPitchers.copy()
+    dfpicture = df.copy()
+    print(dfpicture.head())
     dfpicture = dfpicture[dfpicture["Baseball_Savant_Name"]==chosen_value]
     name = dfpicture["Name"].values[0]
+    print(name)
     adjusted_name = name.split()
+    print(adjusted_name)
     if len(adjusted_name)==2:
         adjusted_chosen_value = adjusted_name[0] + "%20" + adjusted_name[1] + ".jpg"
         image = beginning_path + adjusted_chosen_value
