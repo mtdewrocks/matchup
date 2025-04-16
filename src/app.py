@@ -16,7 +16,7 @@ df['K/IP'] = df['K/IP'].round(2)
 df['WHIP'] = df['WHIP'].round(2)
 print("none")
 #Used for filling the dropdown menu
-dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Pitchers_to_Scrape.xlsx", usecols=["Savant Name", "Savant ID", "Handedness"])
+dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Historical_Starting_Pitchers.xlsx")
 dfPitchers = dfPitchers.rename(columns={"Savant Name":"Baseball_Savant_Name"})
 
 df = df.merge(dfPitchers, left_on="Name", right_on="Baseball_Savant_Name", how="left")
@@ -126,6 +126,8 @@ server = app.server
 
 image = ""
 
+print("printing starting Pitchers")
+print(dfPitchers["Baseball_Savant_Name"].unique().tolist())
 matchup_tab = html.Div(
     [html.Div(html.H1("MLB Matchup Analysis", id="title", style={"textAlign":"center"}), className="row"),
     html.Div([html.Div(dcc.Dropdown(
