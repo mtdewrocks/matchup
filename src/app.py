@@ -19,6 +19,7 @@ print("none")
 
 
 dfPitchers = pd.read_excel("https://github.com/mtdewrocks/matchup/raw/main/assets/Historical_Starting_Pitchers.xlsx", usecols=["Baseball_Savant_Name", "Savant ID", "Handedness"])
+dfPitchers = dfPitchers.dropna()
 #dfPitchers = dfPitchers.rename(columns={"Savant Name":"Baseball_Savant_Name"})
 
 df = df.merge(dfPitchers, left_on="Name", right_on="Baseball_Savant_Name", how="left")
