@@ -362,4 +362,4 @@ def update_stats(n_clicks, chosen_team, chosen_player, chosen_market, chosen_boo
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server()
